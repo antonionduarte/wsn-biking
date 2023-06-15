@@ -1,7 +1,14 @@
 # Prerequisites
 *.d
 
+# Build folder
+./build
+
+# Clangd
+compile_commands.json
+
 # Object files
+*.native
 *.o
 *.ko
 *.obj
