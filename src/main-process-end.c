@@ -3,10 +3,10 @@
 #include "net/routing/routing.h"
 
 
-PROCESS(hello_world_process, "Hello world process");
-AUTOSTART_PROCESSES(&hello_world_process);
+PROCESS(end_process, "End Node Process");
+AUTOSTART_PROCESSES(&end_process);
 /*---------------------------------------------------------------------------*/
-PROCESS_THREAD(hello_world_process, ev, data)
+PROCESS_THREAD(end_process, ev, data)
 {
   static struct etimer timer;
 

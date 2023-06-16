@@ -2,7 +2,6 @@
 #include "contiki.h"
 #include "net/routing/routing.h"
 
-
 PROCESS(hello_world_process, "Hello world process");
 AUTOSTART_PROCESSES(&hello_world_process);
 /*---------------------------------------------------------------------------*/
