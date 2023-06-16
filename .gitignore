@@ -6,6 +6,7 @@
 
 # Clangd
 compile_commands.json
+*.idf
 
 # Object files
 *.native
