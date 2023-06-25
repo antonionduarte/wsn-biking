@@ -4,10 +4,17 @@
 #include "net/netstack.h"
 #include "net/ipv6/simple-udp.h"
 
+
+#define UDP_CLIENT_PORT	8765
+#define UDP_SERVER_PORT	5678
+
+
+static struct simple_udp_connection udp_conn;
+
+
 PROCESS(intermediate_process, "Intermediate Node Process");
 AUTOSTART_PROCESSES(&intermediate_process); 
 
-/*---------------------------------------------------------------------------*/
 
 static void udp_rx_callback(
 	struct simple_udp_connection *conn,
@@ -25,25 +32,27 @@ static void udp_rx_callback(
 	// And then we need to forward the message to the other node
 }
 
+
 PROCESS_THREAD(intermediate_process, ev, data)
 {
-  static struct etimer timer;
-
   PROCESS_BEGIN();
+		NETSTACK_ROUTING.root_start();
 
-	NETSTACK_ROUTING.root_start();
+		simple_udp_register(&udp_conn, UDP_SERVER_PORT, NULL, UDP_CLIENT_PORT, udp_rx_callback);
 
-  /* Setup a periodic timer that expires after 10 seconds. */
-  etimer_set(&timer, CLOCK_SECOND * 10);
+		/* Setup a periodic timer that expires after 10 seconds. */
+		// etimer_set(&timer, CLOCK_SECOND * 10);
 
-  while(1) {
-    printf("Hello, world\n");
+		
 
-    /* Wait for the periodic timer to expire and then restart the timer. */
-    PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
+		// while(1) {
+		// 	printf("Hello, world\n");
 
-    etimer_reset(&timer);
-  }
+		// 	/* Wait for the periodic timer to expire and then restart the timer. */
+		// 	PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
+
+		// 	etimer_reset(&timer);
+		// }
 
   PROCESS_END();
 }
