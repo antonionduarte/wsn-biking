@@ -1,7 +1,9 @@
 #include "stdio.h"
 #include "contiki.h"
+#include "stdio.h"
+#include "stdlib.h"
 #include "net/routing/routing.h"
-
+#include "config.h"
 
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678
@@ -22,21 +24,24 @@ static void udp_rx_callback(
 ) {
 	// TODO: Do stuff within the rx_callback
 	
-	// In this case, we need to check the IP_ADDR of the person who sent the message,
-	// We need to get the IP_ADDR of the other node
-	// And then we need to forward the message to the other node
+	// Save the message id, plus the timestamp of when it was received
+	// On the RPI.
+	
+
 }
 
 
 PROCESS_THREAD(end_process, ev, data)
 {
-  static struct etimer timer;
+ 	static struct etimer timer;
   uip_ipaddr_t dest_ipaddr;
+
+	int message_counter = 0;
 
   PROCESS_BEGIN();
 
 		/* Setup a periodic timer that expires after 10 seconds. */
-		etimer_set(&timer, CLOCK_SECOND * 10);
+		etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);
 
 		if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&dest_ipaddr)) {
 
@@ -44,8 +49,18 @@ PROCESS_THREAD(end_process, ev, data)
 			// also need to make a callback function for when I receive any requests
 			
 			while(1) {
-				printf("Hello, world\n");
+				/* Send the message with the payload here */
+				int payload_size = MESSAGE_SIZE - sizeof(int);
+				unsigned char *payload = malloc(payload_size);
 
+				for (int i = 0; i < payload_size; i++) {
+					payload[i] = 0;
+				}
+
+				message_counter++;
+
+				/* I also need to attach information to the thing */
+				
 				/* Wait for the periodic timer to expire and then restart the timer. */
 				PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
 				etimer_reset(&timer);
