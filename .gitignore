@@ -2,7 +2,7 @@
 *.d
 
 # Build folder
-./build
+./build/*
 
 # Clangd
 compile_commands.json
