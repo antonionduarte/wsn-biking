@@ -8,6 +8,8 @@ ifeq ($(NODE_SELECT), relay)
 	PROJECT_SOURCEFILES += relay-node.c
 endif
 
+PROJECT_SOURCEFILES += radio-settings.c 
+
 all: $(CONTIKI_PROJECT)
 
 MODULES += $(CONTIKI)/os/services/shell

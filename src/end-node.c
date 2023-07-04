@@ -69,14 +69,6 @@ PROCESS_THREAD(end_process, ev, data)
 	}
 
 
-	// /* Setup a periodic timer that expires after 10 seconds. */
-	// etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);
-
-	// if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&dest_ipaddr)) {
-
-	// 	// probably need to establish a UDP connection with the root here.
-	// 	// also need to make a callback function for when I receive any requests
-	// 	
 	// 	while(1) {
 	// 		/* Send the message with the payload here */
 	// 		int payload_size = MESSAGE_SIZE - sizeof(int);
@@ -88,13 +80,6 @@ PROCESS_THREAD(end_process, ev, data)
 
 	// 		message_counter++;
 
-	// 		/* I also need to attach information to the thing */
-	// 		
-	// 		/* Wait for the periodic timer to expire and then restart the timer. */
-	// 		PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
-	// 		etimer_reset(&timer);
-	// 	}
-	// }
 
   PROCESS_END();
 }
