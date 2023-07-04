@@ -3,11 +3,13 @@
 #include "net/routing/routing.h"
 #include "net/netstack.h"
 #include "net/ipv6/simple-udp.h"
+#include "sys/log.h"
 
+#define LOG_MODULE "Server"
+#define LOG_LEVEL LOG_LEVEL_INFO
 
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678
-
 
 static struct simple_udp_connection udp_conn;
 
@@ -30,6 +32,8 @@ static void udp_rx_callback(
 	// In this case, we need to check the IP_ADDR of the person who sent the message,
 	// We need to get the IP_ADDR of the other node
 	// And then we need to forward the message to the other node
+	
+	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
 }
 
 
