@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "stdio.h"
 #include "contiki.h"
 #include "stdio.h"
@@ -7,16 +9,19 @@
 #include "net/ipv6/simple-udp.h"
 #include "config.h"
 #include "dev/leds.h"
-#include <stdio.h>
 #include "sys/log.h"
+
 
 #define LOG_MODULE "Client"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
+
 static struct simple_udp_connection udp_conn;
+
 
 PROCESS(end_process, "End Node Process");
 AUTOSTART_PROCESSES(&end_process);
+
 
 static void udp_rx_callback(
 	struct simple_udp_connection *conn,
