@@ -1,11 +1,11 @@
 ifeq ($(NODE_SELECT), end) 
-	CONTIKI_PROJECT = main-process-end
-	PROJECT_SOURCEFILES += main-process-end.c
+	CONTIKI_PROJECT = end-node
+	PROJECT_SOURCEFILES += end-node.c
 endif
 
-ifeq ($(NODE_SELECT), intermediate)
-	CONTIKI_PROJECT = main-process-intermediate
-	PROJECT_SOURCEFILES += main-process-intermediate.c
+ifeq ($(NODE_SELECT), relay)
+	CONTIKI_PROJECT = relay-node
+	PROJECT_SOURCEFILES += relay-node.c
 endif
 
 all: $(CONTIKI_PROJECT)

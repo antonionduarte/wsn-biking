@@ -14,8 +14,8 @@
 static struct simple_udp_connection udp_conn;
 
 
-PROCESS(intermediate_process, "Intermediate Node Process");
-AUTOSTART_PROCESSES(&intermediate_process); 
+PROCESS(relay_process, "Relay Node Process");
+AUTOSTART_PROCESSES(&relay_process); 
 
 
 static void udp_rx_callback(
@@ -37,7 +37,7 @@ static void udp_rx_callback(
 }
 
 
-PROCESS_THREAD(intermediate_process, ev, data)
+PROCESS_THREAD(relay_process, ev, data)
 {
   PROCESS_BEGIN();
 		NETSTACK_ROUTING.root_start();
