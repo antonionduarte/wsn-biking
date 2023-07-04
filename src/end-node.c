@@ -10,9 +10,6 @@
 #include <stdio.h>
 #include "sys/log.h"
 
-#define UDP_CLIENT_PORT	8765
-#define UDP_SERVER_PORT	5678
-
 #define LOG_MODULE "Client"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
