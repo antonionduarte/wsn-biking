@@ -53,12 +53,11 @@ static void udp_rx_callback(
 
 	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
 	
-	if (is_default_address(&first_end_node)) {
+	if (is_default_address(&first_end_node) && !compare_ip_addresses(&second_end_node, sender_addr)) {
 		first_end_node = *sender_addr;
-	} else if (is_default_address(&second_end_node)) {
+	} else if (is_default_address(&second_end_node) && !compare_ip_addresses(&first_end_node, sender_addr)) {
 		second_end_node = *sender_addr;
 	}
-
 
 	printf("FIRST ADDR: %d\n", is_default_address(&first_end_node));
 	printf("SECOND ADDR: %d\n", is_default_address(&second_end_node));
