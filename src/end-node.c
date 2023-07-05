@@ -63,36 +63,16 @@ PROCESS_THREAD(end_process, ev, data)
 
 		if (ev == message_received_event) etimer_reset(&timer);
 
-		if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&relay_ipaddr)) {
-			simple_udp_sendto(&udp_conn, str, strlen(str), &relay_ipaddr);
-		} else {
-			LOG_INFO("Not reachable yet\n");
+		if (etimer_expired(&timer)) {
+			if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&relay_ipaddr)) {
+				simple_udp_sendto(&udp_conn, str, strlen(str), &relay_ipaddr);
+			} else {
+				LOG_INFO("Not reachable yet\n");
+			}
+
+			etimer_reset(&timer);
 		}
-
-		// if (led_state) {
-		// 	leds_off(LEDS_RED);
-		// 	leds_on(LEDS_GREEN);
-		// } else {
-		// 	leds_off(LEDS_GREEN);
-		// 	leds_on(LEDS_RED);
-		// }
-
-		// led_state = !led_state;
-
-		PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
-		etimer_reset(&timer);
 	}
-
-	// 	while(1) {
-	// 		/* Send the message with the payload here */
-	// 		int payload_size = MESSAGE_SIZE - sizeof(int);
-	// 		unsigned char *payload = malloc(payload_size);
-
-	// 		for (int i = 0; i < payload_size; i++) {
-	// 			payload[i] = 0;
-	// 		}
-
-	// 		message_counter++;
 
   PROCESS_END();
 }
