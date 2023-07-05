@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "config.h"
 #include "stdio.h"
 #include "contiki.h"
 #include "stdio.h"
@@ -7,7 +8,6 @@
 #include "net/netstack.h"
 #include "net/routing/routing.h"
 #include "net/ipv6/simple-udp.h"
-#include "config.h"
 #include "dev/leds.h"
 #include "sys/log.h"
 
@@ -15,9 +15,9 @@
 #define LOG_MODULE "Client"
 #define LOG_LEVEL LOG_LEVEL_INFO
 
+#define RPL_CONF_DAG_ROOT_RANK 1
 
 static struct simple_udp_connection udp_conn;
-
 
 PROCESS(end_process, "End Node Process");
 AUTOSTART_PROCESSES(&end_process);
@@ -44,7 +44,7 @@ PROCESS_THREAD(end_process, ev, data)
   static struct etimer timer;
 	static char str[32];
 
-	uip_ipaddr_t dest_ipaddr;
+	uip_ipaddr_t relay_ipaddr; // The ip_addr of the relay node - the DAG root.
 
   PROCESS_BEGIN();
 	
@@ -54,8 +54,8 @@ PROCESS_THREAD(end_process, ev, data)
 	apply_config();
 
 	while (1) {
-		if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&dest_ipaddr)) {
-			simple_udp_sendto(&udp_conn, str, strlen(str), &dest_ipaddr);
+		if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&relay_ipaddr)) {
+			simple_udp_sendto(&udp_conn, str, strlen(str), &relay_ipaddr);
 		} else {
 			LOG_INFO("Not reachable yet\n");
 		}
