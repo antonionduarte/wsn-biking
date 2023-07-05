@@ -52,7 +52,7 @@ PROCESS_THREAD(end_process, ev, data)
 	uip_ipaddr_t relay_ipaddr; // The ip_addr of the relay node - the DAG root.
 
   PROCESS_BEGIN();
-	
+
 	simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, udp_rx_callback);
 	etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);	
 	snprintf(str, sizeof(str), "Hello Server");
