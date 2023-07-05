@@ -8,7 +8,7 @@ ifeq ($(NODE_SELECT), relay)
 	PROJECT_SOURCEFILES += relay-node.c
 endif
 
-PROJECT_SOURCEFILES += radio-settings.c 
+PROJECT_SOURCEFILES += config.c 
 
 all: $(CONTIKI_PROJECT)
 

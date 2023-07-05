@@ -51,6 +51,7 @@ PROCESS_THREAD(end_process, ev, data)
 	simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, udp_rx_callback);
 	etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);	
 	snprintf(str, sizeof(str), "Hello Server");
+	apply_config();
 
 	while (1) {
 		if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&dest_ipaddr)) {

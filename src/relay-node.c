@@ -38,7 +38,7 @@ static void udp_rx_callback(
 PROCESS_THREAD(relay_process, ev, data)
 {
   PROCESS_BEGIN();
-
+		apply_config();
 		NETSTACK_ROUTING.root_start();
 		simple_udp_register(&udp_conn, UDP_SERVER_PORT, NULL, UDP_CLIENT_PORT, udp_rx_callback);
   
