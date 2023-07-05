@@ -18,6 +18,7 @@
 #define RPL_CONF_DAG_ROOT_RANK 1
 
 static struct simple_udp_connection udp_conn;
+static process_event_t message_received_event;
 
 PROCESS(end_process, "End Node Process");
 AUTOSTART_PROCESSES(&end_process);
@@ -38,6 +39,8 @@ static void udp_rx_callback(
 	// On the RPI.
 	
 	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
+
+	process_post(&end_process, message_received_event, NULL);
 }
 
 
@@ -56,6 +59,10 @@ PROCESS_THREAD(end_process, ev, data)
 	apply_config();
 
 	while (1) {
+		PROCESS_WAIT_EVENT();
+
+		if (ev == message_received_event) etimer_reset(&timer);
+
 		if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&relay_ipaddr)) {
 			simple_udp_sendto(&udp_conn, str, strlen(str), &relay_ipaddr);
 		} else {
@@ -76,7 +83,6 @@ PROCESS_THREAD(end_process, ev, data)
 		etimer_reset(&timer);
 	}
 
-
 	// 	while(1) {
 	// 		/* Send the message with the payload here */
 	// 		int payload_size = MESSAGE_SIZE - sizeof(int);
@@ -87,7 +93,6 @@ PROCESS_THREAD(end_process, ev, data)
 	// 		}
 
 	// 		message_counter++;
-
 
   PROCESS_END();
 }
