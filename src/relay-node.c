@@ -23,6 +23,7 @@ static uip_ipaddr_t second_end_node;
 PROCESS(relay_process, "Relay Node Process");
 AUTOSTART_PROCESSES(&relay_process); 
 
+
 int is_default_address(const uip_ipaddr_t *address) {
     for (int i = 0; i < 4; i++) {
         if (address->u8[i] != 0) {
@@ -31,6 +32,7 @@ int is_default_address(const uip_ipaddr_t *address) {
     }
     return 1;
 }
+
 
 int compare_ip_addresses(const uip_ipaddr_t *addr1, const uip_ipaddr_t *addr2) {
 	for (int i = 0; i < sizeof(uip_ipaddr_t); i++) {
@@ -41,6 +43,7 @@ int compare_ip_addresses(const uip_ipaddr_t *addr1, const uip_ipaddr_t *addr2) {
 	return 1;
 }
 
+
 static void udp_rx_callback(
 	struct simple_udp_connection *conn,
 	const uip_ipaddr_t *sender_addr,
@@ -50,7 +53,6 @@ static void udp_rx_callback(
 	const uint8_t *data,
 	uint16_t datalen
 ) {
-
 	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
 	
 	if (is_default_address(&first_end_node) && !compare_ip_addresses(&second_end_node, sender_addr)) {
@@ -59,12 +61,23 @@ static void udp_rx_callback(
 		second_end_node = *sender_addr;
 	}
 
+	if (compare_ip_addresses(&first_end_node, sender_addr)) {
+		if (!is_default_address(&second_end_node)) {
+			// relay the packet to the second end node
+			simple_udp_sendto(&udp_conn, data, datalen, &second_end_node);
+		}
+	} else {
+		if (!is_default_address(&first_end_node)) {
+			// relay the packet to the first end node
+			simple_udp_sendto(&udp_conn, data, datalen, &first_end_node);
+		}
+	}
+
 	printf("FIRST ADDR: %d\n", is_default_address(&first_end_node));
 	printf("SECOND ADDR: %d\n", is_default_address(&second_end_node));
 
 	LOG_INFO_6ADDR(sender_addr);
 	LOG_INFO("\n");
-
 }
 
 

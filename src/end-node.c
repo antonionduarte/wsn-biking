@@ -36,6 +36,8 @@ static void udp_rx_callback(
 	
 	// Save the message id, plus the timestamp of when it was received
 	// On the RPI.
+	
+	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
 }
 
 
@@ -69,7 +71,7 @@ PROCESS_THREAD(end_process, ev, data)
 		// }
 
 		// led_state = !led_state;
-		//
+
 		PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&timer));
 		etimer_reset(&timer);
 	}
