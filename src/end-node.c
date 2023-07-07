@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 
 #include "config.h"
@@ -8,6 +9,7 @@
 #include "net/netstack.h"
 #include "net/routing/routing.h"
 #include "net/ipv6/simple-udp.h"
+#include "packetbuf.h"
 #include "dev/leds.h"
 #include "sys/log.h"
 
@@ -34,10 +36,13 @@ static void udp_rx_callback(
 	uint16_t datalen
 ) {
 	// TODO: Do stuff within the rx_callback
-	
 	// Save the message id, plus the timestamp of when it was received
 	// On the RPI.
 	
+	int16_t rssi = packetbuf_attr(PACKETBUF_ATTR_RSSI);
+	uint8_t lqi = packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);
+	
+	LOG_INFO("LQI and RSSI: %d, %d\n", rssi, lqi);
 	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
 
 	process_post(&end_process, message_received_event, NULL);

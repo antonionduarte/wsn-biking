@@ -25,12 +25,12 @@ AUTOSTART_PROCESSES(&relay_process);
 
 
 int is_default_address(const uip_ipaddr_t *address) {
-    for (int i = 0; i < 4; i++) {
-        if (address->u8[i] != 0) {
-            return 0;
-        }
-    }
-    return 1;
+	for (int i = 0; i < 4; i++) {
+		if (address->u8[i] != 0) {
+			return 0;
+		}
+	}
+	return 1;
 }
 
 
