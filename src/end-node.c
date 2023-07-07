@@ -40,7 +40,7 @@ static void udp_rx_callback(
 	// On the RPI.
 	
 	int16_t rssi = packetbuf_attr(PACKETBUF_ATTR_RSSI);
-	uint8_t lqi = packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);
+	int16_t lqi = packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);
 	
 	LOG_INFO("LQI and RSSI: %d, %d\n", rssi, lqi);
 	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
