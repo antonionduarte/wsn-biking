@@ -65,7 +65,7 @@ PROCESS_THREAD(end_process, ev, data)
 		const char* data_to_write = "Hello World!\n";
 
 		// Initialize the Coffee file system
-		cfs_coffee_init();
+		cfs_coffee_format();
 
 		// Open the file for writing
 		file = cfs_open("hello.txt", CFS_WRITE | CFS_APPEND);
