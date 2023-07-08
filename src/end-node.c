@@ -85,6 +85,18 @@ PROCESS_THREAD(end_process, ev, data)
 		// Close the file
 		cfs_close(file);
 
+
+		struct cfs_dir dir;
+		struct cfs_dirent dirent;
+
+		if(cfs_opendir(&dir, "/") == 0) {
+			while(cfs_readdir(&dir, &dirent) != -1) {
+				printf("File: %s (%ld bytes)\n",
+							 dirent.name, (long)dirent.size);
+			}
+			cfs_closedir(&dir);
+		}
+
 		simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, udp_rx_callback);
 		etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);	
 		snprintf(str, sizeof(str), "Hello Server");
