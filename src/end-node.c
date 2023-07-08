@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+// #include "os/storage/cfs-coffee.h"
 #include "project-conf.h"
 #include "stdio.h"
 #include "contiki.h"
@@ -12,6 +13,7 @@
 #include "packetbuf.h"
 #include "dev/leds.h"
 #include "sys/log.h"
+#include "cfs/cfs-coffee.h"
 
 
 #define LOG_MODULE "Client"
@@ -58,6 +60,30 @@ PROCESS_THREAD(end_process, ev, data)
 	uip_ipaddr_t relay_ipaddr; // The ip_addr of the relay node - the DAG root.
 
   PROCESS_BEGIN();
+
+		static int file;
+		const char* data_to_write = "Hello World!\n";
+
+		// Initialize the Coffee file system
+		cfs_coffee_init();
+
+		// Open the file for writing
+		file = cfs_open("hello.txt", CFS_WRITE | CFS_APPEND);
+		if (file < 0) {
+			// Handle file open error
+			PROCESS_EXIT();
+		}
+
+		// Write data to the file
+		int len = strlen(data_to_write);
+		int bytes_written = cfs_write(file, (void*)data_to_write, len);
+		if (bytes_written != len) {
+			// Handle write error
+			PROCESS_EXIT();
+		}
+
+		// Close the file
+		cfs_close(file);
 
 		simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, udp_rx_callback);
 		etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);	
