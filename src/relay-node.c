@@ -1,5 +1,5 @@
 #include "stdio.h"
-#include "config.h"
+#include "project-conf.h"
 #include "contiki.h"
 #include "net/routing/routing.h"
 #include "net/netstack.h"
@@ -84,8 +84,5 @@ PROCESS_THREAD(relay_process, ev, data)
 		apply_config();
 		NETSTACK_ROUTING.root_start();
 		simple_udp_register(&udp_conn, UDP_SERVER_PORT, NULL, UDP_CLIENT_PORT, udp_rx_callback);
-
-		printf("FIRST ADDR: %d\n", is_default_address(&first_end_node));
-		printf("SECOND ADDR: %d\n", is_default_address(&second_end_node));
 	PROCESS_END();
 }

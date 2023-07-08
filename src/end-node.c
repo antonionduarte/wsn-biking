@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "config.h"
+#include "project-conf.h"
 #include "stdio.h"
 #include "contiki.h"
 #include "stdio.h"
