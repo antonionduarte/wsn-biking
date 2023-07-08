@@ -42,8 +42,9 @@ static void udp_rx_callback(
 	int16_t rssi = packetbuf_attr(PACKETBUF_ATTR_RSSI);
 	int16_t lqi = packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);
 	
-	LOG_INFO("LQI and RSSI: %d, %d\n", rssi, lqi);
+	LOG_INFO("LQI and RSSI: %d, %d\n", lqi, rssi);
 	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
+	LOG_INFO("\n");
 
 	process_post(&end_process, message_received_event, NULL);
 }
@@ -58,26 +59,26 @@ PROCESS_THREAD(end_process, ev, data)
 
   PROCESS_BEGIN();
 
-	simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, udp_rx_callback);
-	etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);	
-	snprintf(str, sizeof(str), "Hello Server");
-	apply_config();
+		simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, udp_rx_callback);
+		etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);	
+		snprintf(str, sizeof(str), "Hello Server");
+		apply_config();
 
-	while (1) {
-		PROCESS_WAIT_EVENT();
+		while (1) {
+			PROCESS_WAIT_EVENT();
 
-		if (ev == message_received_event) etimer_reset(&timer);
+			if (ev == message_received_event) etimer_reset(&timer);
 
-		if (etimer_expired(&timer)) {
-			if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&relay_ipaddr)) {
-				simple_udp_sendto(&udp_conn, str, strlen(str), &relay_ipaddr);
-			} else {
-				LOG_INFO("Not reachable yet\n");
+			if (etimer_expired(&timer)) {
+				if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&relay_ipaddr)) {
+					simple_udp_sendto(&udp_conn, str, strlen(str), &relay_ipaddr);
+				} else {
+					LOG_INFO("Not reachable yet\n");
+				}
+
+				etimer_reset(&timer);
 			}
-
-			etimer_reset(&timer);
 		}
-	}
 
   PROCESS_END();
 }

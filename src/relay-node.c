@@ -73,9 +73,6 @@ static void udp_rx_callback(
 		}
 	}
 
-	printf("FIRST ADDR: %d\n", is_default_address(&first_end_node));
-	printf("SECOND ADDR: %d\n", is_default_address(&second_end_node));
-
 	LOG_INFO_6ADDR(sender_addr);
 	LOG_INFO("\n");
 }

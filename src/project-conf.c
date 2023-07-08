@@ -1,4 +1,4 @@
-#include "config.h"
+#include "project-conf.h"
 #include "net/netstack.h"
 #include "dev/radio.h"
 
