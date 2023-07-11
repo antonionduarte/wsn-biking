@@ -57,13 +57,13 @@ static void udp_rx_callback(
 {
 	int16_t rssi = packetbuf_attr(PACKETBUF_ATTR_RSSI);
 	int16_t lqi = packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);
-	long message_id = extract_message_id((char *) data);
+	// long message_id = extract_message_id((char *) data);
 
 	clock_time_t curr_time_in_ticks = clock_time();
 	unsigned long curr_time_in_seconds = (unsigned long)(curr_time_in_ticks / CLOCK_SECOND);
 
 	char buffer[128];  // allocate a buffer, ensure it is large enough
-	sprintf(buffer, "%ld, %lu, %d, %d", message_id, curr_time_in_seconds, rssi, lqi);
+	sprintf(buffer, "%ld, %lu, %d, %d", (long) 1, curr_time_in_seconds, rssi, lqi);
 
 	LOG_INFO("%s\n", buffer);
 
