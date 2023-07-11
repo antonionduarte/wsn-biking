@@ -38,11 +38,11 @@ AUTOSTART_PROCESSES(&end_process);
 // }
 
 
-static int32_t extract_message_id(const char *data) {
-	int32_t message_id;
-	memcpy(&message_id, data, sizeof(message_id));
-	return message_id;
-}
+// static int32_t extract_message_id(const char *data) {
+// 	int32_t message_id;
+// 	memcpy(&message_id, data, sizeof(message_id));
+// 	return message_id;
+// }
 
 
 static void udp_rx_callback(
