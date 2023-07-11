@@ -32,10 +32,10 @@ PROCESS(end_process, "End Node Process");
 AUTOSTART_PROCESSES(&end_process);
 
 
-static void generate_message(int32_t message_id, size_t payload_size, char payload_value, char *buffer) {
-	memcpy(buffer, &message_id, sizeof(message_id));
-	memset(buffer + sizeof(message_id), payload_value, payload_size);
-}
+// static void generate_message(int32_t message_id, size_t payload_size, char payload_value, char *buffer) {
+// 	memcpy(buffer, &message_id, sizeof(message_id));
+// 	memset(buffer + sizeof(message_id), payload_value, payload_size);
+// }
 
 
 static int32_t extract_message_id(const char *data) {
@@ -57,13 +57,13 @@ static void udp_rx_callback(
 {
 	int16_t rssi = packetbuf_attr(PACKETBUF_ATTR_RSSI);
 	int16_t lqi = packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);
-	int32_t message_id = extract_message_id((char *) data);
+	long message_id = extract_message_id((char *) data);
 
 	clock_time_t curr_time_in_ticks = clock_time();
 	unsigned long curr_time_in_seconds = (unsigned long)(curr_time_in_ticks / CLOCK_SECOND);
 
 	char buffer[128];  // allocate a buffer, ensure it is large enough
-	sprintf(buffer, "%d, %lu, %d, %d", message_id, curr_time_in_seconds, rssi, lqi);
+	sprintf(buffer, "%ld, %lu, %d, %d", message_id, curr_time_in_seconds, rssi, lqi);
 
 	LOG_INFO("%s\n", buffer);
 
