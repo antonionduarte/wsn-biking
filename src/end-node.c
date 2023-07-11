@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-// #include "os/storage/cfs-coffee.h"
+#include "os/storage/cfs/cfs.h"
 #include "project-conf.h"
 #include "stdio.h"
 #include "contiki.h"
@@ -13,8 +13,12 @@
 #include "packetbuf.h"
 #include "dev/leds.h"
 #include "sys/log.h"
-#include "cfs/cfs-coffee.h"
+#include "cpu/arm/common/SD-card/sdcard.h"
+#include "arch/cpu/arm/common/SD-card/sdcard.h"
 
+#ifndef NEED_FORMATTING
+#define NEED_FORMATTING 0
+#endif
 
 #define LOG_MODULE "Client"
 #define LOG_LEVEL LOG_LEVEL_INFO
@@ -28,6 +32,19 @@ PROCESS(end_process, "End Node Process");
 AUTOSTART_PROCESSES(&end_process);
 
 
+static void generate_message(int32_t message_id, size_t payload_size, char payload_value, char *buffer) {
+	memcpy(buffer, &message_id, sizeof(message_id));
+	memset(buffer + sizeof(message_id), payload_value, payload_size);
+}
+
+
+static int32_t extract_message_id(const char *data) {
+	int32_t message_id;
+	memcpy(&message_id, data, sizeof(message_id));
+	return message_id;
+}
+
+
 static void udp_rx_callback(
 	struct simple_udp_connection *conn,
 	const uip_ipaddr_t *sender_addr,
@@ -36,17 +53,28 @@ static void udp_rx_callback(
 	uint16_t receiver_port,
 	const uint8_t *data,
 	uint16_t datalen
-) {
-	// TODO: Do stuff within the rx_callback
-	// Save the message id, plus the timestamp of when it was received
-	// On the RPI.
-	
+) 
+{
 	int16_t rssi = packetbuf_attr(PACKETBUF_ATTR_RSSI);
 	int16_t lqi = packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);
+	int32_t message_id = extract_message_id((char *) data);
+
+	clock_time_t curr_time_in_ticks = clock_time();
+	unsigned long curr_time_in_seconds = (unsigned long)(curr_time_in_ticks / CLOCK_SECOND);
+
+	char buffer[128];  // allocate a buffer, ensure it is large enough
+	sprintf(buffer, "%d, %lu, %d, %d", message_id, curr_time_in_seconds, rssi, lqi);
+
+	LOG_INFO("%s\n", buffer);
+
+	char filename[100];
+	sprintf(filename, "%d-%d-%d-%d.txt", INTERVAL_BETWEEN_MESSAGES_SECONDS, MESSAGE_SIZE, RADIO_TX_POWER, RADIO_CHANNEL);
 	
-	LOG_INFO("LQI and RSSI: %d, %d\n", lqi, rssi);
-	LOG_INFO("Received request '%.*s'\n", datalen, (char *) data);
-	LOG_INFO("\n");
+	static int file;
+	file = cfs_open(filename, CFS_WRITE | CFS_APPEND);
+
+	cfs_write(file, (void*) buffer, strlen(buffer));
+	cfs_close(file);
 
 	process_post(&end_process, message_received_event, NULL);
 }
@@ -61,41 +89,10 @@ PROCESS_THREAD(end_process, ev, data)
 
   PROCESS_BEGIN();
 
-		static int file;
-		const char* data_to_write = "Hello World!\n";
-
-		// Initialize the Coffee file system
-		cfs_coffee_format();
-
-		// Open the file for writing
-		file = cfs_open("hello.txt", CFS_WRITE | CFS_APPEND);
-		if (file < 0) {
-			// Handle file open error
-			PROCESS_EXIT();
-		}
-
-		// Write data to the file
-		int len = strlen(data_to_write);
-		int bytes_written = cfs_write(file, (void*)data_to_write, len);
-		if (bytes_written != len) {
-			// Handle write error
-			PROCESS_EXIT();
-		}
-
-		// Close the file
-		cfs_close(file);
-
-
-		struct cfs_dir dir;
-		struct cfs_dirent dirent;
-
-		if(cfs_opendir(&dir, "/") == 0) {
-			while(cfs_readdir(&dir, &dirent) != -1) {
-				printf("File: %s (%ld bytes)\n",
-							 dirent.name, (long)dirent.size);
-			}
-			cfs_closedir(&dir);
-		}
+		// Format the node if needed
+		#if NEED_FORMATTING
+			cfs_coffee_format();
+		#endif
 
 		simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, udp_rx_callback);
 		etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);	

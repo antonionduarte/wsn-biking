@@ -1,14 +1,21 @@
 #ifndef PROJECT_CONF_H_
 #define PROJECT_CONF_H_
 
+// NOTE:
+// probably we should test values like: 256, 1024, 2048, 8192, 32768
+
 #define INTERVAL_BETWEEN_MESSAGES_SECONDS 1
-#define MESSAGE_SIZE 64
+#define MESSAGE_SIZE 256
 
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678
 
 // RPL Lite configuration parameters
 #define RPL_CONF_PARENT_SELECTION 0
+
+// Radio configuration
+#define RADIO_CHANNEL 16
+#define RADIO_TX_POWER 10
 
 // Netstack layer
 #define NETSTACK_CONF_MAC csma_driver
