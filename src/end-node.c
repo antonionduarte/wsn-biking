@@ -40,9 +40,14 @@ PROCESS(file_transfer, "File Transfer Process");
 
 AUTOSTART_PROCESSES(&end_process);
 
-static void generate_message(int32_t message_id, size_t payload_size, char payload_value, char *buffer) {
+void generate_message(int32_t message_id, size_t buffer_size, char payload_value, char *buffer) {
+	if (buffer_size < sizeof(message_id) + MESSAGE_SIZE) {
+		fprintf(stderr, "Buffer is too small for the message\n");
+		return;
+	}
+	
 	memcpy(buffer, &message_id, sizeof(message_id));
-	memset(buffer + sizeof(message_id), payload_value, payload_size);
+	memset(buffer + sizeof(message_id), payload_value, buffer_size - sizeof(message_id));
 }
 
 
@@ -128,7 +133,7 @@ PROCESS_THREAD(end_process, ev, data)
 				if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&relay_ipaddr)) {
 					char payload_value = 'A';
 					char buffer[sizeof(curr_message) + MESSAGE_SIZE];
-					generate_message(curr_message, sizeof(buffer), payload_value, buffer);
+					generate_message(curr_message, sizeof(curr_message) + MESSAGE_SIZE, payload_value, buffer);
 					simple_udp_sendto(&udp_conn, buffer, sizeof(buffer), &relay_ipaddr);
 					curr_message++;
 				} else {
