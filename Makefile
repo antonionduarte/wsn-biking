@@ -8,6 +8,11 @@ ifeq ($(NODE_SELECT), relay)
 	PROJECT_SOURCEFILES += relay-node.c
 endif
 
+ifeq ($(NODE_SELECT), transfer)
+	CONTIKI_PROJECT = transfer-experiments
+	PROJECT_SOURCEFILES = transfer-experiments.c
+endif
+
 PROJECT_SOURCEFILES += project-conf.c 
 
 all: $(CONTIKI_PROJECT)

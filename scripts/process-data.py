@@ -53,8 +53,8 @@ def plot_histograms(data):
 
 
 if __name__ == "__main__":
-    generate_mock_data("./mock-data.csv")
-    data = process_data("./mock-data.csv")
+    # generate_mock_data("./mock-data.csv")
+    data = process_data("./1-256-10-16.txt")
     plot_time_series(data)
     # plot_histograms(data)
     
