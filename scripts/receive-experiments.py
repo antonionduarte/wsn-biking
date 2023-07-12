@@ -1,3 +1,4 @@
+import os
 import serial
 import time
 
@@ -7,6 +8,10 @@ filename = None
 data = ""
 reading_file = False
 
+# Directory to save the results
+results_dir = "results"
+os.makedirs(results_dir, exist_ok=True)
+
 while True:
     line = ser.readline().decode('utf-8').strip()
     if line:
@@ -14,7 +19,7 @@ while True:
         if line.startswith("FILENAME:"):
             # If we have data from a previous file, write it to disk
             if filename is not None and data:
-                with open(filename, 'w') as f:
+                with open(os.path.join(results_dir, filename), 'w') as f:
                     f.write(data)
                 print("Wrote data to file: " + filename)
             # Start a new file
@@ -28,7 +33,7 @@ while True:
             reading_file = False
             # If we have data from a file, write it to disk
             if filename is not None and data:
-                with open(filename, 'w') as f:
+                with open(os.path.join(results_dir, filename), 'w') as f:
                     f.write(data)
                 print("Wrote data to file: " + filename)
             data = ""  # Clear the data

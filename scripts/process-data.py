@@ -1,6 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.backends.backend_pdf
 import random
+import os
 import time
 
 
@@ -21,8 +23,8 @@ def generate_mock_data(file_path, num_entries=1000):
             curr_time += 1  # Increment the time by one second
 
 
-def plot_time_series(data):
-    ax1 = plt.subplot(1, 1, 1)
+def plot_time_series(data, pdf):
+    fig, ax1 = plt.subplots()
 
     color = 'tab:red'
     ax1.set_xlabel('Time (s)')
@@ -37,10 +39,11 @@ def plot_time_series(data):
     ax2.tick_params(axis='y', labelcolor=color)
 
     plt.tight_layout()  
-    plt.show()
+    pdf.savefig(fig)
+    plt.close()
 
 
-def plot_histograms(data):
+def plot_histograms(data, pdf):
     fig, axs = plt.subplots(2, 1, tight_layout=True)
     
     axs[0].hist(data['rssi'].values, bins=30, color='red')  # Convert pandas Series to numpy array
@@ -49,12 +52,23 @@ def plot_histograms(data):
     axs[1].hist(data['lqi'].values, bins=30, color='blue')  # Convert pandas Series to numpy array
     axs[1].set_title('LQI')
     
-    plt.show()
+    pdf.savefig(fig)
+    plt.close()
 
 
 if __name__ == "__main__":
-    # generate_mock_data("./mock-data.csv")
-    data = process_data("./1-256-10-16.txt")
-    plot_time_series(data)
-    # plot_histograms(data)
-    
+    results_dir = "results"
+    plots_dir = "plots"
+    os.makedirs(plots_dir, exist_ok=True)
+
+    for file_name in os.listdir(results_dir):
+        if file_name.endswith(".txt"):
+            file_path = os.path.join(results_dir, file_name)
+            print(f"Processing file: {file_path}")
+            data = process_data(file_path)
+
+            pdf = matplotlib.backends.backend_pdf.PdfPages(os.path.join(plots_dir, file_name[:-4] + ".pdf"))
+            plot_time_series(data, pdf)
+            plot_histograms(data, pdf)
+            pdf.close()
+            print(f"Saved plots to: {os.path.join(plots_dir, file_name[:-4] + '.pdf')}")
