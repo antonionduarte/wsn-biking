@@ -13,7 +13,7 @@ void set_radio_channel(int channel) {
 }
 
 void apply_config() {
-	// set_radio_channel(10);
-	// set_radio_transmission_power(10);
+	set_radio_channel(RADIO_CHANNEL);
+	set_radio_transmission_power(RADIO_TX_POWER);
 }
 

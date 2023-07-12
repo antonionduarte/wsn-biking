@@ -96,7 +96,6 @@ static void udp_rx_callback(
 PROCESS_THREAD(end_process, ev, data)
 {
   static struct etimer timer;
-	static char str[32];
 	static long curr_message = 0;
 
 	// the ip_addr of the relay node - the DAG root.
@@ -130,7 +129,7 @@ PROCESS_THREAD(end_process, ev, data)
 					char payload_value = 'A';
 					char buffer[sizeof(curr_message) + MESSAGE_SIZE];
 					generate_message(curr_message, sizeof(buffer), payload_value, buffer);
-					simple_udp_sendto(&udp_conn, str, strlen(str), &relay_ipaddr);
+					simple_udp_sendto(&udp_conn, buffer, sizeof(buffer), &relay_ipaddr);
 					curr_message++;
 				} else {
 					LOG_INFO("Not reachable yet\n");
