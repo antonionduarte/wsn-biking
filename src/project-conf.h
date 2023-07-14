@@ -5,7 +5,7 @@
 // probably we should test values like: 256, 1024, 2048, 8192, 32768
 
 #define INTERVAL_BETWEEN_MESSAGES_SECONDS 1
-#define MESSAGE_SIZE 50
+#define MESSAGE_SIZE 100
 
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678

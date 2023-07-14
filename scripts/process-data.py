@@ -67,8 +67,12 @@ if __name__ == "__main__":
             print(f"Processing file: {file_path}")
             data = process_data(file_path)
 
-            pdf = matplotlib.backends.backend_pdf.PdfPages(os.path.join(plots_dir, file_name[:-4] + ".pdf"))
-            plot_time_series(data, pdf)
-            plot_histograms(data, pdf)
-            pdf.close()
-            print(f"Saved plots to: {os.path.join(plots_dir, file_name[:-4] + '.pdf')}")
+            pdf_line = matplotlib.backends.backend_pdf.PdfPages(os.path.join(plots_dir, file_name[:-4] + "-line.pdf"))
+            plot_time_series(data, pdf_line)
+            pdf_line.close()
+            print(f"Saved line plot to: {os.path.join(plots_dir, file_name[:-4] + '-line.pdf')}")
+
+            pdf_histogram = matplotlib.backends.backend_pdf.PdfPages(os.path.join(plots_dir, file_name[:-4] + "-histogram.pdf"))
+            plot_histograms(data, pdf_histogram)
+            pdf_histogram.close()
+            print(f"Saved histogram plot to: {os.path.join(plots_dir, file_name[:-4] + '-histogram.pdf')}")

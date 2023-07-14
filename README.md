@@ -27,10 +27,10 @@ Zolertia Remote Rev-B
 
 - [X] Setting up the dev environment with Raspberries + Sensor Nodes
 - [X] One node sending messages to another node
-- [ ] Messages need to be of specific sizes, the size of messages needs to be configurable.
+- [X] Messages need to be of specific sizes, the size of messages needs to be configurable.
 - [X] Three nodes sending messages, two end nodes sending messages to each other periodically through a relay node
-- [ ] Writing csv files to the SD cards with relevant information
-- [ ] Data processing scripts
+- [X] Writing csv files to the SD cards with relevant information
+- [X] Data processing scripts
 - [ ] Report 
 
 ## Compilation and running:
