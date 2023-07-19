@@ -4,7 +4,8 @@
 // NOTE:
 // probably we should test values like: 256, 1024, 2048, 8192, 32768
 
-#define INTERVAL_BETWEEN_MESSAGES_SECONDS 1
+
+#define RTIMER_PERIOD RTIMER_SECOND / 2
 #define MESSAGE_SIZE 100
 
 #define UDP_CLIENT_PORT	8765

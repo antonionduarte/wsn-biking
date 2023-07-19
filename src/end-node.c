@@ -33,8 +33,6 @@
 
 #define RPL_CONF_DAG_ROOT_RANK 1
 
-#define RTIMER_PERIOD RTIMER_SECOND / 10
-
 static struct simple_udp_connection udp_conn;
 static process_event_t message_received_event;
 static struct rtimer my_rtimer;
@@ -98,7 +96,6 @@ static void udp_rx_callback(
 	sprintf(filename, "%d-%d-%d-%d.txt", INTERVAL_BETWEEN_MESSAGES_SECONDS, MESSAGE_SIZE, RADIO_TX_POWER, RADIO_CHANNEL);
 	printf("FILENAME:%s\n", filename); // Adding this line
 	
-
 	// static int file;
 	// file = cfs_open(filename, CFS_WRITE | CFS_APPEND);
 
@@ -156,7 +153,6 @@ PROCESS_THREAD(end_process, ev, data)
 				} else {
 					leds_off(LEDS_ALL);
 					leds_on(LEDS_RED);
-					LOG_INFO("Not reachable yet\n");
 				}
 			}
 		}
