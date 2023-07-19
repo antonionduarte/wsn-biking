@@ -19,6 +19,7 @@
 #include "lib/sensors.h"
 #include "dev/button-sensor.h"
 #include "dev/button-hal.h"
+#include "sys/rtimer.h"
 
 #ifndef NEED_FORMATTING
 #define NEED_FORMATTING 0
@@ -32,8 +33,11 @@
 
 #define RPL_CONF_DAG_ROOT_RANK 1
 
+#define RTIMER_PERIOD RTIMER_SECOND / 10
+
 static struct simple_udp_connection udp_conn;
 static process_event_t message_received_event;
+static struct rtimer my_rtimer;
 
 PROCESS(end_process, "End Node Process");
 PROCESS(file_transfer, "File Transfer Process");
@@ -50,17 +54,19 @@ void generate_message(int32_t message_id, size_t buffer_size, char payload_value
 	memset(buffer + sizeof(message_id), payload_value, buffer_size - sizeof(message_id));
 }
 
-
 static int32_t extract_message_id(const char *data) {
 	int32_t message_id;
 	memcpy(&message_id, data, sizeof(message_id));
 	return message_id;
 }
 
+// rtimer callback function
+void rtimer_callback(struct rtimer *rt, void *ptr)
+{
+	process_post(&end_process, PROCESS_EVENT_CONTINUE, NULL);
+	rtimer_set(&my_rtimer, RTIMER_NOW() + RTIMER_PERIOD, 1, rtimer_callback, NULL);
+}
 
-// udp callback function
-// responsible for logging the messages received to a file in the flash memory 
-// of the node, as well as saving some extra values
 static void udp_rx_callback(
 	struct simple_udp_connection *conn,
 	const uip_ipaddr_t *sender_addr,
@@ -71,6 +77,11 @@ static void udp_rx_callback(
 	uint16_t datalen
 ) 
 {
+	leds_off(LEDS_ALL);
+	leds_on(LEDS_YELLOW);
+	clock_delay(40000);
+	leds_off(LEDS_YELLOW);
+
 	int16_t rssi = packetbuf_attr(PACKETBUF_ATTR_RSSI);
 	int16_t lqi = packetbuf_attr(PACKETBUF_ATTR_LINK_QUALITY);
 	long message_id = extract_message_id((char *) data);
@@ -95,72 +106,70 @@ static void udp_rx_callback(
 	process_post(&end_process, message_received_event, NULL);
 }
 
-
-// end process, sends periodical messages to a relay node, that relays 
-// them to the other end node
 PROCESS_THREAD(end_process, ev, data)
 {
-  static struct etimer timer;
 	static long curr_message = 0;
 
-	// the ip_addr of the relay node - the DAG root.
 	uip_ipaddr_t relay_ipaddr; 
 
-  PROCESS_BEGIN();
+	PROCESS_BEGIN();
 		
-		// format the node if needed
 		#if NEED_FORMATTING
 			cfs_coffee_format();
 		#endif
 
-		// sends message to the server
 		simple_udp_register(&udp_conn, UDP_CLIENT_PORT, NULL, UDP_SERVER_PORT, udp_rx_callback);
-		etimer_set(&timer, CLOCK_SECOND * INTERVAL_BETWEEN_MESSAGES_SECONDS);	
+
 		apply_config();
 
-		// main process loop, sends messags periodically
+		rtimer_set(&my_rtimer, RTIMER_NOW() + RTIMER_PERIOD, 1, rtimer_callback, NULL);
+
 		while (1) {
 			PROCESS_WAIT_EVENT();
 
-			if (ev == message_received_event) etimer_reset(&timer);
+			if (ev == message_received_event) {
+				leds_off(LEDS_ALL);
+				if (NETSTACK_ROUTING.node_is_reachable()) {
+					leds_on(LEDS_GREEN);
+				} else {
+					leds_on(LEDS_RED);
+				}
+			}
 
 			if (ev == button_hal_press_event) {
 				process_start(&file_transfer, NULL);
 				PROCESS_EXIT();
 			}
 
-			if (etimer_expired(&timer)) {
+			if (ev == PROCESS_EVENT_CONTINUE) {
 				if (NETSTACK_ROUTING.node_is_reachable() && NETSTACK_ROUTING.get_root_ipaddr(&relay_ipaddr)) {
+					leds_off(LEDS_ALL);
+					leds_on(LEDS_GREEN);
+					
 					char payload_value = 'A';
 					char buffer[sizeof(curr_message) + MESSAGE_SIZE];
 					generate_message(curr_message, sizeof(curr_message) + MESSAGE_SIZE, payload_value, buffer);
 					simple_udp_sendto(&udp_conn, buffer, sizeof(buffer), &relay_ipaddr);
 					curr_message++;
 				} else {
+					leds_off(LEDS_ALL);
+					leds_on(LEDS_RED);
 					LOG_INFO("Not reachable yet\n");
 				}
-				etimer_reset(&timer);
 			}
 		}
 
-  PROCESS_END();
+	PROCESS_END();
 }
 
-
-
-// file transfer process,
-// responsible for transfering all the files from the flash memory of the node
-// into another device using the serial interface
 PROCESS_THREAD(file_transfer, ev, data)
 {
 	PROCESS_BEGIN();
 	
-		// read and send a log file...
 		struct cfs_dir dir;
 		struct cfs_dirent dirent;
 		int fd;
 
-		// Open the current directory
 		if (cfs_opendir(&dir, "/") == -1) {
 			printf("Failed to open directory\n");
 			PROCESS_EXIT();
@@ -168,16 +177,12 @@ PROCESS_THREAD(file_transfer, ev, data)
 
 		char buffer[MAX_READ_SIZE];
 
-		// Loop over all files in the directory
 		while (cfs_readdir(&dir, &dirent) != -1) {
-			// Print the filename
 			printf("FILENAME:%s\n", dirent.name);
 			printf("FILESTART:\n");
 
-			// Open the file
 			fd = cfs_open(dirent.name, CFS_READ);
 			if (fd != -1) {
-				// Read the file and print its contents
 				int n;
 				while ((n = cfs_read(fd, buffer, MAX_READ_SIZE)) > 0) {
 					buffer[n] = '\0';  // Ensure null termination
