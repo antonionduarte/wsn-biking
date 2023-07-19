@@ -4,7 +4,8 @@
 // NOTE:
 // probably we should test values like: 256, 1024, 2048, 8192, 32768
 
-
+// TODO: Remove this
+#define INTERVAL_BETWEEN_MESSAGES_SECONDS 1
 #define RTIMER_PERIOD RTIMER_SECOND / 2
 #define MESSAGE_SIZE 100
 
