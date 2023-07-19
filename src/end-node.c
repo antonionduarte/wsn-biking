@@ -96,12 +96,14 @@ static void udp_rx_callback(
 
 	char filename[100];
 	sprintf(filename, "%d-%d-%d-%d.txt", INTERVAL_BETWEEN_MESSAGES_SECONDS, MESSAGE_SIZE, RADIO_TX_POWER, RADIO_CHANNEL);
+	printf("FILENAME:%s\n", filename); // Adding this line
 	
-	static int file;
-	file = cfs_open(filename, CFS_WRITE | CFS_APPEND);
 
-	cfs_write(file, (void*) buffer, strlen(buffer));
-	cfs_close(file);
+	// static int file;
+	// file = cfs_open(filename, CFS_WRITE | CFS_APPEND);
+
+	// cfs_write(file, (void*) buffer, strlen(buffer));
+	// cfs_close(file);
 
 	process_post(&end_process, message_received_event, NULL);
 }
