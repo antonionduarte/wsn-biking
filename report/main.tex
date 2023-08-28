@@ -301,25 +301,18 @@ The experimental evaluation yielded noteworthy results concerning the impact of 
 
 \subsection{Impact of Transmission Power}
 
-Our experiments showed that varying the transmission power had the most significant impact on the results. As the transmission power was decreased (Tests 2 and 3), there was a notable decline in the Link Quality Indicator (LQI) and Received Signal Strength Indicator (RSSI) values. This was expected, as a lower transmission power typically leads to a weaker signal at the receiver, thereby reducing the signal quality. This effect was accentuated when the distance between the nodes increased slightly, leading to a loss of connection, which underscored the importance of adequate transmission power in maintaining connectivity in a mobile wireless sensor network.
-
-Conversely, increasing the transmission power (Test 4) led to higher LQI and RSSI values, indicating improved signal quality. However, the values were extremely unstable, fluctuating drastically from one packet to the next. This volatility can be attributed to several factors, including interference from other devices, multi-path fading due to the mobility of the bicycles, and changing environmental conditions.
+Our experiments showed that varying the transmission power had the most significant impact on the quality of packet transmission. As the transmission power was decreased (Tests 2 and 3), there was a corresponding decrease in the RSSI values, indicating a lower quality of packet transmission. Conversely, as the transmission power was increased (Test 4), the RSSI values increased, indicating a higher quality of packet transmission. This trend was observed across all packet sizes and transmission channels.
+Regarding the LQI, although the most common value throughout all the tests remains at around -100, it's noticeable in the Line Plot for Test 3 an increase in noise as the transmission power is decreased. This is also reflected in the Histogram Plot for Test 3, where the distribution of LQI values is more spread out than in the other tests. This indicates that the quality of packet transmission is lower when the transmission power is decreased. 
 
 \subsection{Impact of Transmission Channel}
 
-Altering the transmission channel also significantly impacted the results, but not as dramatically as changes to the transmission power. The transmission channel, which defines the frequency band used for communication, can greatly affect the noise in the signal, and thus the quality of the received packets. In the presence of other devices operating on the same or nearby frequencies, changing the channel can help avoid interference and improve communication reliability. However, the choice of channel can also be influenced by environmental factors, as signal propagation characteristics can vary with frequency.
-
-Tests 5, 6, and 7 explored the impact of using different transmission channels. The results showed that the LQI and RSSI values were slightly more stable compared to the transmission power tests, suggesting less interference and more consistent signal propagation conditions on the chosen channels. We did find that the LQI and RSSI values were more stable on the default channel (26) in comparison with the other channels (11, 15, and 20). This indicates that the default channel is more suitable for the bicycle network scenario.
-
-% compared to the other channels, which is likely due to the fact that the default channel is less prone to interference from other devices.
+Our experiments also showed that varying the transmission channel had a significant impact on the quality of packet transmission. As the transmission channel was changed from the default value of 26 to 11, 15, and 20 (Tests 5, 6, and 7), there was a corresponding decrease in the RSSI values, indicating a lower quality of packet transmission. This trend was observed across all packet sizes and transmission powers.
 
 \subsection{Impact of Packet Size}
 
-Finally, varying the packet size had the least impact on the results, with the LQI and RSSI values remaining relatively stable throughout the experiments (Tests 8 and 9). However, it was observed that smaller packet sizes yielded slightly better results, likely due to the reduced probability of packet errors in shorter transmissions.
+Our experiments showed that varying the packet size had a very minor impact on the quality of packet transmission. As the packet size was decreased (Test 8), there was a corresponding increase in the RSSI values, indicating a higher quality of packet transmission. Conversely, as the packet size was increased (Test 9), the RSSI values decreased, indicating a lower quality of packet transmission. Both variations were minor.
 
-\subsection{Inter Packet Interval}
-
-We also experimented with the inter packet interval (IPI), but due to the limitations of the timer we chose for our implementation (the \texttt{etimer} module), we were unable to set the IPI to a value lower than 1 second. This meant that we were unable to draw any conclusions from the results, as the IPI was too high to be able to observe any significant changes in the LQI and RSSI values.
+\subsection{Summary}
 
 In summary, our experiments have shown that in a mobile multi-hop wireless sensor network, the transmission power significantly impacts the quality of packet transmission, followed by the choice of transmission channel. Packet size, while not as impactful, can also affect the transmission quality, particularly in noisy or interference-prone environments. These findings underline the importance of carefully configuring these parameters to ensure reliable communication in mobile wireless sensor networks. Future research could explore the impact of other parameters, such as modulation scheme, error correction techniques, and network topology, on multi-hop packet transmission.
 

@@ -1,13 +1,15 @@
 import os
 
 def process_file(filename):
-    with open(filename, 'r') as f:
+    with open(filename, 'r', errors='ignore') as f:
         lines = f.readlines()
 
     new_lines = []
     expected_message_id = None
 
     for line in lines:
+        print(line)
+        print(filename)
         message_id, timestamp, rssi, lqi = line.split(', ')
         message_id = int(message_id)
 

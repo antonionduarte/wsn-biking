@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 # Directory where the files are stored
@@ -19,11 +20,13 @@ for filename in os.listdir(directory):
             tx_power = float(filename_parts[2])
 
         # Read file into a DataFrame
-        df = pd.read_csv(os.path.join(directory, filename), names=['message_id', 'timestamp', 'RSSI', 'LQI'])
+        df = pd.read_csv(os.path.join(directory, filename), names=['message_id', 'curr_time_in_seconds', 'rssi', 'lqi', 'ack'])
+        df.replace('NaN', np.nan, inplace=True)
+        df[['rssi', 'lqi']] = df[['rssi', 'lqi']].apply(pd.to_numeric, errors='coerce')
 
-        # Calculate average RSSI and LQI
-        avg_rssi = df['RSSI'].mean()
-        avg_lqi = df['LQI'].mean()
+        # Calculate average RSSI and LQI, ignoring NaN values
+        avg_rssi = df['rssi'].mean()
+        avg_lqi = df['lqi'].mean()
 
         # Add averages to df_avg
         new_row = pd.DataFrame({'TX Power': [tx_power], 'Average RSSI': [avg_rssi], 'Average LQI': [avg_lqi]})
